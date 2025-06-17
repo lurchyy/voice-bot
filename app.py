@@ -10,7 +10,6 @@ import json
 from audio_recorder_streamlit import audio_recorder
 import requests
 
-
 load_dotenv()
 
 knowledge_base = """
@@ -73,17 +72,13 @@ WORK EXPERIENCE:
 - Utilized **SAP ABAP** to migrate 7+ years of physical data into a **virtual datalake**, increasing accessibility by 25% and improving scalability.
 """
 
-
-
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-
 
 st.set_page_config(
     page_title="AI Voice Assistant",
     page_icon="🎙️",
     layout="centered"
 )
-
 
 st.markdown("""
     <style>
@@ -113,15 +108,16 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-
 if 'messages' not in st.session_state:
     st.session_state.messages = []
+
 
 def save_audio(audio_bytes):
     """Save audio bytes to temporary file"""
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
         temp_file.write(audio_bytes)
         return temp_file.name
+
 
 def transcribe_audio(audio_file):
     """Transcribe audio using Groq Whisper via raw HTTP request"""
@@ -152,16 +148,18 @@ def transcribe_audio(audio_file):
         st.error(f"Exception during transcription: {str(e)}")
         return None
 
+
 async def speak_text(text):
     """Convert text to speech and play it using Edge TTS"""
     try:
         communicate = edge_tts.Communicate(text, "en-US-GuyNeural")
         await communicate.save("response.mp3")
-        st.audio("response.mp3", autoplay=True)
+        st.audio("response.mp3")
         
         os.remove("response.mp3")
     except Exception as e:
         st.error(f"Error playing audio: {str(e)}")
+
 
 def get_ai_response(prompt):
     """Get response from Groq API"""
@@ -189,7 +187,6 @@ def get_ai_response(prompt):
 st.title("🎙️ AI Voice Assistant")
 st.markdown("Click the microphone button below to start recording your question.")
 
-
 audio_bytes = audio_recorder(
     text="Click to record",
     recording_color="#e74c3c",
@@ -202,9 +199,7 @@ if audio_bytes:
     
     audio_file = save_audio(audio_bytes)
     
-    
     st.audio(audio_bytes, format="audio/wav")
-    
     
     with st.spinner("Transcribing your speech..."):
         transcription = transcribe_audio(audio_file)
@@ -220,14 +215,12 @@ if audio_bytes:
         
         os.unlink(audio_file)
 
-
 st.markdown("### Chat History")
 for message in st.session_state.messages:
     if message["role"] == "user":
         st.markdown(f'<div class="chat-message user-message">You: {message["content"]}</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="chat-message assistant-message">Assistant: {message["content"]}</div>', unsafe_allow_html=True)
-
 
 st.markdown("""
 ### How to use:
@@ -236,4 +229,4 @@ st.markdown("""
 3. Click the button again to stop recording
 4. Wait for the AI to process and respond
 5. Listen to the AI's voice response
-""") 
+""")

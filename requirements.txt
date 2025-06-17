@@ -2,5 +2,5 @@ streamlit==1.31.1
 groq
 edge-tts==6.1.9
 python-dotenv==1.0.0
-audio-recorder-streamlit==0.0.5
+audio-recorder-streamlit
 requests==2.31.0 
